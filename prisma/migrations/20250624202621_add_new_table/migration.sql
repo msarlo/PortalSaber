@@ -1,0 +1,7 @@
+-- CreateTable
+CREATE TABLE "TutorialStats" (
+    "tutorialId" TEXT NOT NULL PRIMARY KEY,
+    "likes" INTEGER NOT NULL DEFAULT 0,
+    "dislikes" INTEGER NOT NULL DEFAULT 0,
+    "lastUpdated" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
