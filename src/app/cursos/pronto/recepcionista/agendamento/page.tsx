@@ -13,7 +13,7 @@ export default function AgendamentoPage() {
             <img src="/assets/img/Agendamento32.png" alt="Sétimo Passo Agendamento" />
             <img src="/assets/img/Agendamento33.png" alt="Oitavo Passo Agendamento" />
             <img src="/assets/img/Agendamento34.png" alt="Nono Passo Agendamento" />
-            <InteractionButtons initialLikes={0} initialDislikes={0} />
+            <InteractionButtons tutorialId="agendamento" initialLikes={0} initialDislikes={0} />
         </main>
     );
 }

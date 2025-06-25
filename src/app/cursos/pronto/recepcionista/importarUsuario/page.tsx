@@ -8,7 +8,7 @@ export default function ImportarUsuarioPage() {
             <img src="/assets/img/importar_usuarioPG16.png" alt="Primeiro Passo importando usuario" />
             <img src="/assets/img/importar_usuarioPG17.png" alt="Primeiro Passo importando usuario" />
             <img src="/assets/img/importar_usuarioPG18.png" alt="Primeiro Passo importando usuario" />
-            <InteractionButtons initialLikes={0} initialDislikes={0} />
+            <InteractionButtons tutorialId="importar_usuario" initialLikes={0} initialDislikes={0} />
         </main>
     );
 }
