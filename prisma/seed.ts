@@ -1,65 +1,67 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Verificar se admin já existe
-  const adminExists = await prisma.user.findUnique({
-    where: { email: "admin@gmail.com" },
-  });
-
-  if (!adminExists) {
-    // Criar usuário admin
-    const senhaHash = await hash("123456", 12);
-
-    await prisma.user.create({
-      data: {
-        name: "Administrador",
-        email: "admin@gmail.com",
-        senha: senhaHash,
-        role: "ADMIN",
+  try {
+    // Verificar se admin já existe
+    const adminExists = await prisma.user.findUnique({
+      where: {
+        email: "admin@example.com",
       },
     });
 
-    console.log("Usuário admin criado com sucesso!");
-  } else {
-    console.log("Usuário admin já existe.");
-  }
+    if (!adminExists) {
+      const hashedPassword = await hash("admin123", 10);
 
-  // Criar alguns usuários de teste (opcional)
-  const testUsers = [
-    {
-      name: "Dr. Luis Gustavo",
-      email: "luis@saude.com",
-      senha: await hash("123456", 12),
-      role: "SAUDE" as const,
-    },
-    {
-      name: "Dra. Gabriela Melo",
-      email: "gabi@saude.com",
-      senha: await hash("123456", 12),
-      role: "SUS" as const,
-    },
-  ];
+      await prisma.user.create({
+        data: {
+          name: "Admin",
+          email: "admin@example.com",
+          senha: hashedPassword,
+          role: Role.ADMIN,
+        },
+      });
 
-  for (const user of testUsers) {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: user.email },
-    });
-
-    if (!existingUser) {
-      await prisma.user.create({ data: user });
-      console.log(`Usuário criado: ${user.email}`);
+      console.log("Admin user created successfully");
     }
+
+    // Criando usuários de teste para SUS e SAUDE
+    const testUsers = [
+      {
+        name: "Test SUS User",
+        email: "sus@example.com",
+        senha: await hash("test123", 10),
+        role: Role.SUS,
+      },
+      {
+        name: "Test SAUDE User",
+        email: "saude@example.com",
+        senha: await hash("test123", 10),
+        role: Role.SAUDE,
+      },
+    ];
+
+    for (const user of testUsers) {
+      const exists = await prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (!exists) {
+        await prisma.user.create({ data: user });
+        console.log(`Created user: ${user.name}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error seeding database:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

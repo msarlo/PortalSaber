@@ -14,7 +14,6 @@ export default function InteractiveButton({
   initialCount,
   isActive,
   onInteraction,
-  className,
 }: InteractiveButtonProps) {
   const formatCount = (count: number) => {
     if (count >= 1000) {

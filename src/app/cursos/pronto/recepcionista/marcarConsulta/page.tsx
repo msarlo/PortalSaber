@@ -8,7 +8,7 @@ export default function MarcarConsultaPage() {
             <h1>Tutorial aqui</h1>
             <p>Em breve, um tutorial completo sobre como marcar uma consulta.</p>
 
-            <InteractionButtons initialLikes={0} initialDislikes={0} />
+            <InteractionButtons tutorialId="marcar_consulta" initialLikes={0} initialDislikes={0} />
         </main>
     );
 }
