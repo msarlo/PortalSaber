@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/schemas/userSchemas';
-import { LinkButton } from '@/components/LinkButton'; 
+import { LinkButton } from '@/components/LinkButton';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
@@ -43,10 +43,10 @@ export default function LoginPage() {
       if (result.user && result.token) {
         login(result.user, result.token); // 1. Atualiza o contexto de autenticação
         setIsSuccess(true);
-        
+
         // 2. Força a atualização da rota atual (incluindo o layout e o Header)
         // para que ele pegue o novo estado de autenticação.
-        router.refresh(); 
+        router.refresh();
 
         // 3. Navega para a página de cursos.
         // Adicionar um pequeno delay pode ajudar em alguns casos, mas router.refresh() deve ser suficiente.
@@ -68,8 +68,7 @@ export default function LoginPage() {
 
   return (
     <>
-      
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 flex flex-col md:justify-center py-30 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <h2 className="text-center text-3xl font-extrabold text-black">
             Acessar sua conta
