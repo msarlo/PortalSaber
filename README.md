@@ -2,7 +2,7 @@
 
 Portal web desenvolvido para a Prefeitura de Juiz de Fora, dedicado a concentrar tutoriais e manuais de plataformas essenciais utilizadas por colaboradores do município, inicialmente voltado à área da saúde e agora expandido para outros setores administrativos.
 
-LINK:
+LINK:(https://portal-saber.vercel.app/)
 
 ---
 
