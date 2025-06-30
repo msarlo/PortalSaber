@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link';
+import { useState } from 'react';
 
 // Interface para os itens da sidebar 
 export interface SidebarItem {
@@ -15,9 +17,31 @@ interface SideBarProps {
 }
 
 export function SideBar({ title, items }: SideBarProps) {
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
-    <aside className="fixed top-0 bottom-0 left-0 w-64 md:w-72 bg-custom-blue text-white p-4 pt-28 overflow-y-auto z-40">
-      
+    <aside 
+      className={`fixed top-0 bottom-0 left-0 w-64 md:w-72 bg-custom-blue text-white p-4 pt-28 z-40 transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      }`
+    }
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="absolute top-33 -right-5 bg-blue-800 text-white w-8 h-12 rounded-r-lg flex items-center justify-center focus:outline-none"
+        aria-label="Toggle Sidebar"
+      >
+        <svg
+          className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white tracking-tight">{title}</h2>
       </div>
