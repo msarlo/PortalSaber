@@ -130,7 +130,8 @@ export default async function DocumentacaoGLPIPage() {
   // Boa prática: verificar se a chamada de API foi bem-sucedida
   if (!response.ok) {
     // Isso vai acionar o error.tsx mais próximo na árvore de componentes
-    throw new Error("Falha ao carregar os dados do curso.");
+    // Vamos lançar um erro mais detalhado para depuração
+    throw new Error(`Falha ao carregar os dados do curso. Status: ${response.status} ${response.statusText}`);
   }
 
   const glpiData: GLPIData = await response.json();
