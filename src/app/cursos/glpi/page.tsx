@@ -117,19 +117,12 @@ const ContentRenderer = ({ item }: { item: ConteudoItem }) => {
 
 // Função para obter a URL base correta para o ambiente
 const getBaseUrl = () => {
-  // Se estiver em produção na Vercel, usa a URL da Vercel.
-  // A Vercel injeta esta variável de ambiente automaticamente.
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  // Senão, usa a URL de desenvolvimento local.
-  return "http://localhost:3000";
+  return process.env.NEXT_PUBLIC_API_BASE_URL;
 };
 
 export default async function DocumentacaoGLPIPage() {
   const baseUrl = getBaseUrl();
   
-  // Buscar dados da API usando a URL absoluta e dinâmica
   const response = await fetch(`${baseUrl}/api/cursos/glpi`, {
     cache: "no-store", // Garante que os dados sejam sempre frescos
   });
