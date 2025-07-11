@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getListarCursos, getCursoPorSlug, type Curso } from "@/lib/data";
+import path from "path";
+import { promises as fs } from "fs";
 
 // Cursos em memória para simular o CRUD
 let cursosMemoria: Curso[] = [];
@@ -12,6 +14,16 @@ let cursosMemoria: Curso[] = [];
     console.error("Erro ao carregar cursos iniciais:", error);
   }
 })();
+
+// Helper para garantir que o diretório de dados exista
+async function ensureDirectoryExistence(filePath: string) {
+  const dirname = path.dirname(filePath);
+  try {
+    await fs.access(dirname);
+  } catch (e) {
+    await fs.mkdir(dirname, { recursive: true });
+  }
+}
 
 // GET - Retorna todos os cursos ou um específico por ID/role/slug
 export async function GET(request: Request) {
@@ -68,50 +80,52 @@ export async function GET(request: Request) {
   return NextResponse.json(cursosMemoria);
 }
 
-// POST - Cria um novo curso
+// POST - Cria um novo curso E o seu conteúdo detalhado
 export async function POST(request: Request) {
   try {
+    // O body agora contém tanto os dados do card quanto o conteúdo
     const body = await request.json();
+    const { cardData, tutorialContent } = body;
 
-    // Validações básicas
-    if (!body.title || !body.image || !body.role) {
+    // Validação
+    if (!cardData || !tutorialContent || !cardData.slug) {
       return NextResponse.json(
-        { error: "Título, imagem e role são obrigatórios" },
+        { message: "Dados do card e conteúdo são obrigatórios." },
         { status: 400 }
       );
     }
 
-    // Validar role
-    if (body.role !== "Saude" && body.role !== "SUS") {
-      return NextResponse.json(
-        { error: 'Role inválida. Use "Saude" ou "SUS"' },
-        { status: 400 }
-      );
-    }
-
-    // Gerar ID único sequencial
+    // --- 1. LÓGICA PARA CRIAR O CARD ---
     const maxId = Math.max(...cursosMemoria.map((c) => c.id), 0);
-
-    // Criar slug a partir do título se não fornecido
-    const slug = body.slug || body.title.toLowerCase().replace(/\s+/g, "-");
-
-    const novoCurso: Curso = {
+    const novoCursoCard: Curso = {
       id: maxId + 1,
-      title: body.title,
-      image: body.image,
-      slug: slug,
-      description: body.description,
-      role: body.role,
+      title: cardData.title,
+      image: cardData.image,
+      slug: cardData.slug,
+      description: cardData.description,
+      role: cardData.role,
     };
+    cursosMemoria.push(novoCursoCard);
+    // Futuramente, aqui vão salvar lista no DB.
 
-    cursosMemoria.push(novoCurso);
+    // --- 2. NOVA LÓGICA PARA SALVAR O CONTEÚDO DETALHADO ---
+    const tutorialFilePath = path.join(
+      process.cwd(),
+      "src",
+      "data",
+      "tutorials",
+      `${cardData.slug}.json`
+    );
+    await ensureDirectoryExistence(tutorialFilePath);
+    // Salva o objeto tutorialContent diretamente no arquivo JSON
+    await fs.writeFile(tutorialFilePath, JSON.stringify(tutorialContent, null, 2));
 
-    return NextResponse.json(novoCurso, { status: 201 });
+    return NextResponse.json(novoCursoCard, { status: 201 });
   } catch (error) {
     console.error("Erro ao criar curso:", error);
     return NextResponse.json(
       { error: "Erro ao processar a requisição" },
-      { status: 400 }
+      { status: 500 } // Usar 500 para erro de servidor
     );
   }
 }
