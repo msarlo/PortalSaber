@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getListarCursos, getCursoPorSlug, type Curso } from "@/lib/data";
 import path from "path";
 import { promises as fs } from "fs";
+import { tutorialCompletoSchema } from "@/schemas/tutorialSchemas";
 
 // Cursos em memória para simular o CRUD
 let cursosMemoria: Curso[] = [];
@@ -85,15 +86,24 @@ export async function POST(request: Request) {
   try {
     // O body agora contém tanto os dados do card quanto o conteúdo
     const body = await request.json();
-    const { cardData, tutorialContent } = body;
+    const validation = tutorialCompletoSchema.safeParse(body);
 
-    // Validação
-    if (!cardData || !tutorialContent || !cardData.slug) {
+    if(!validation.success){
       return NextResponse.json(
-        { message: "Dados do card e conteúdo são obrigatórios." },
-        { status: 400 }
+        {message: "Dados inválidos", errors: validation.error.flatten().fieldErrors},
+        {status: 400}
       );
     }
+
+    const { cardData, tutorialContent } = validation.data;
+
+    // Validação
+   // if (!cardData || !tutorialContent || !cardData.slug) {
+   //   return NextResponse.json(
+   //     { message: "Dados do card e conteúdo são obrigatórios." },
+   //     { status: 400 }
+   //   );
+   // }
 
     // --- 1. LÓGICA PARA CRIAR O CARD ---
     const maxId = Math.max(...cursosMemoria.map((c) => c.id), 0);
