@@ -39,7 +39,7 @@ function generateSidebarItems(capitulos: Capitulo[]) {
       .map((sub) => ({
         title: sub.titulo!,
         slug: sub.titulo!.toLowerCase().replace(/\s+/g, "-"),
-      })),
+      })),  
   }));
 }
 
@@ -115,11 +115,25 @@ const ContentRenderer = ({ item }: { item: ConteudoItem }) => {
   }
 };
 
+// Função para obter a URL base correta para o ambiente
+const getBaseUrl = () => {
+  return process.env.NEXT_PUBLIC_API_BASE_URL;
+};
+
 export default async function DocumentacaoGLPIPage() {
-  // Buscar dados da API
-  const response = await fetch("http://localhost:3000/api/cursos/glpi", {
-    cache: "no-store",
+  const baseUrl = getBaseUrl();
+  
+  const response = await fetch(`${baseUrl}/api/cursos/glpi`, {
+    cache: "no-store", // Garante que os dados sejam sempre frescos
   });
+
+  // Boa prática: verificar se a chamada de API foi bem-sucedida
+  if (!response.ok) {
+    // Isso vai acionar o error.tsx mais próximo na árvore de componentes
+    // Vamos lançar um erro mais detalhado para depuração
+    throw new Error(`Falha ao carregar os dados do curso. Status: ${response.status} ${response.statusText}`);
+  }
+
   const glpiData: GLPIData = await response.json();
 
   const sidebarItems = generateSidebarItems(glpiData.capitulos);
