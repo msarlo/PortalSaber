@@ -130,6 +130,24 @@ export async function POST(request: Request) {
     // Salva o objeto tutorialContent diretamente no arquivo JSON
     await fs.writeFile(tutorialFilePath, JSON.stringify(tutorialContent, null, 2));
 
+    // 🚀 SINCRONIZAÇÃO AUTOMÁTICA
+    console.log("🔄 Iniciando sincronização automática...");
+    try {
+      const syncResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000'}/api/cursos/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (syncResponse.ok) {
+        console.log("✅ Sincronização automática concluída");
+      } else {
+        console.log("⚠️ Erro na sincronização automática");
+      }
+    } catch (syncError) {
+      console.log("⚠️ Erro ao chamar sincronização:", syncError);
+    }
+
+    console.log("✅ Curso criado com sucesso");
     return NextResponse.json(novoCursoCard, { status: 201 });
   } catch (error) {
     console.error("Erro ao criar curso:", error);

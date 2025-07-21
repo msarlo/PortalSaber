@@ -1,4 +1,4 @@
-// src/app/api/cursos/[slug]/route.ts
+//Rota dinâmica que busca e retorna os dados de um curso específico baseado no slug
 import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";

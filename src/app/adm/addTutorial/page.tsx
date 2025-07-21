@@ -60,7 +60,7 @@ export default function CriarTutorialPage() {
     setError(null);
 
     const tutorialCompleto = {
-      cardData: { title, slug, image, description, role }, // Preencha com os estados do formulário
+      cardData: { title, slug, image, description, role },
       tutorialContent: {
         id: slug,
         titulo: title,
@@ -68,7 +68,7 @@ export default function CriarTutorialPage() {
           {
             id: "capitulo-principal",
             titulo: "Conteúdo Principal",
-            conteudo: conteudo, // O array de blocos dinâmicos
+            conteudo: conteudo,
           },
         ],
       },
@@ -77,7 +77,6 @@ export default function CriarTutorialPage() {
     console.log("Enviando para a API:", JSON.stringify(tutorialCompleto, null, 2));
     
     try {
-      // Aponte para a sua API existente!
       const response = await fetch('/api/cursos/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -88,9 +87,7 @@ export default function CriarTutorialPage() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Falha ao salvar o tutorial.");
       }
-
-      alert("Tutorial salvo com sucesso!");
-      router.push('/'); 
+      router.push('/adm/sync?action=auto&curso=' + slug);
 
     } catch (err: any) {
       setError(err.message);
