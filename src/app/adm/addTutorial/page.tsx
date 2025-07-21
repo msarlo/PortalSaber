@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
 
 // Tipos para o nosso conteúdo dinâmico, espelhando seu JSON
 type ConteudoItem = {
@@ -106,7 +107,59 @@ export default function CriarTutorialPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         <fieldset className="border p-4 rounded-md">
           <legend className="text-xl font-semibold px-2">Informações do Card</legend>
-          {/* Inputs para title, slug, image, description, role... */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-medium">Título</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Slug (URL)</label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                placeholder="tutorial-exemplo"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block font-medium">Descrição</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                rows={3}
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Função/Cargo</label>
+              <input
+                type="text"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                placeholder="ex: Enfermeiro, Médico, etc."
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Imagem do Card</label>
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                placeholder="/assets/images/exemplo.png"
+              />
+            </div>
+          </div>
         </fieldset>
 
         {/* Editor de Conteúdo Dinâmico */}
@@ -141,11 +194,12 @@ export default function CriarTutorialPage() {
                 )}
 
                 {bloco.tipo === 'imagem' && (
-                  <div className="space-y-2">
-                    <label className="block font-medium">Imagem</label>
-                    <input type="text" placeholder="URL da Imagem (ex: /assets/img.png)" value={bloco.src} onChange={(e) => atualizarBloco(index, 'src', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-                    <input type="text" placeholder="Texto alternativo (alt)" value={bloco.alt} onChange={(e) => atualizarBloco(index, 'alt', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-                  </div>
+                  <ImageUpload
+                    value={bloco.src}
+                    onChange={(url) => atualizarBloco(index, 'src', url)}
+                    altValue={bloco.alt}
+                    onAltChange={(alt) => atualizarBloco(index, 'alt', alt)}
+                  />
                 )}
               </div>
             ))}

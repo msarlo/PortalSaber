@@ -16,10 +16,12 @@
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.8.2",
+    "@types/multer": "^2.0.0",
     "aprendendo-next": "file:",
     "bcryptjs": "^3.0.2",
     "framer-motion": "^12.16.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
     "next": "^15.3.2",
     "prisma": "^6.8.2",
     "react": "^19.1.0",
