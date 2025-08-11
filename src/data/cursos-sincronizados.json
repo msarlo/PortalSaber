@@ -25,10 +25,10 @@
   },
   {
     "id": 4,
-    "title": "Teste",
-    "image": "/uploads/images/1754928737951_logoPrefeitura.png",
-    "slug": "teste",
-    "description": "ESTAMOS PRONTOS...",
+    "title": "Sistema Pronto",
+    "image": "/uploads/images/1754939485632_LogoPronto.jpeg",
+    "slug": "sistema-pronto",
+    "description": "Cadastrar Usuário...",
     "role": "Saude"
   }
 ]

@@ -1,43 +1,46 @@
-//Rota genérica que busca e renderiza o conteúdo de um curso baseado no slug
+'client side'
 import React from "react";
+import path from "path";
+import { promises as fs } from "fs";
+import { notFound } from "next/navigation";
 import { SideBar } from "@/components/SideBar";
 import InteractionButtons from "@/components/InteractionButtons";
 import { ContentRenderer } from "@/components/CourseRenderer/ContentRenderer";
 import { generateSidebarItems } from "@/components/CourseRenderer/SidebarGenerator";
 import { CourseData } from "@/components/CourseRenderer/types";
-import { getBaseUrl } from "@/lib/getBaseUrl";
 
-// Função para buscar dados do curso baseado no slug
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+// Função para buscar dados do curso baseado no slug (lendo direto do FS)
 async function getCourseData(slug: string): Promise<CourseData> {
-  const baseUrl = getBaseUrl();
-  const response = await fetch(`${baseUrl}/api/cursos/${slug}`, {
-    cache: "no-store",
-  });
+  const tutorialsDir = path.join(process.cwd(), "src", "data", "tutorials");
+  const filePath = path.join(tutorialsDir, `${slug}.json`);
 
-  if (!response.ok) {
-    throw new Error(`Falha ao carregar o curso "${slug}". Status: ${response.status}`);
+  try {
+    const file = await fs.readFile(filePath, "utf8");
+    return JSON.parse(file) as CourseData;
+  } catch (err: any) {
+    if (err?.code === "ENOENT") {
+      notFound();
+    }
+    throw new Error(`Falha ao ler o arquivo do curso "${slug}"`);
   }
-
-  return response.json();
 }
 
-export default async function CoursePage({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> 
+export default async function CoursePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  
+
   const courseData = await getCourseData(slug);
-  
   const sidebarItems = generateSidebarItems(courseData.capitulos);
 
   return (
     <div className="flex flex-1 pt-15">
-      <SideBar 
-        title={`Capítulos ${courseData.titulo}`} 
-        items={sidebarItems} 
-      />
+      <SideBar title={`Capítulos ${courseData.titulo}`} items={sidebarItems} />
 
       <article className="flex-1 p-4 md:pl-80 overflow-y-auto">
         {courseData.capitulos.map((capitulo) => (
@@ -63,14 +66,14 @@ export default async function CoursePage({
   );
 }
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
   const courseData = await getCourseData(slug);
-  
+
   return {
     title: `${courseData.titulo} - Portal do Saber`,
     description: `Tutorial completo sobre ${courseData.titulo}`,
