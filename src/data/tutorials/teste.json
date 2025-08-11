@@ -38,7 +38,9 @@
         },
         {
           "tipo": "paragrafo",
-          "texto": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          "texto": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "src": "",
+          "alt": ""
         }
       ]
     }
