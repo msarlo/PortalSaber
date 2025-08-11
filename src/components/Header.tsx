@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { LinkButton } from './LinkButton';
+import { useRouter } from "next/navigation";
 
 // Um ícone simples de usuário como placeholder
 const UserIcon = ({ className }: { className?: string }) => (
@@ -21,6 +22,8 @@ export function Header({ children }: Props) {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const isAdmin = isAuthenticated && user?.role === "ADMIN";
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
@@ -162,6 +165,19 @@ export function Header({ children }: Props) {
           )}
         </nav>
 
+       
+        <div className="flex items-center gap-3">
+        {/* Botão addTutorial */}
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => router.push("/adm/addTutorial")}
+              className="px-4 py-2 rounded-md bg-gray-700 text-white hover:bg-gray-800 transition"
+            >
+              Adicionar Tutorial
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );
