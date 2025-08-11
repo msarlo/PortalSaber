@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 
 import { LinkButton } from "@/components/LinkButton";
 import { Container } from "@/components/Container";
-import { getListarCursos, Curso } from "@/lib/data";
 import { SearchBar } from "@/components/SearchBar";
 import { Banner } from "@/components/Banner";
 import { useRouter } from "next/navigation";
@@ -16,6 +15,15 @@ interface StoredUserData {
 }
 
 type ProfileRole = "SAUDE" | "SUS";
+
+type Curso = {
+  id: number;
+  title: string;
+  image: string;
+  slug: string;
+  description?: string;
+  role?: string;
+};
 
 export default function CursosPage() {
   const router = useRouter();
@@ -52,7 +60,9 @@ export default function CursosPage() {
       async function loadCursos() {
         setIsLoadingCursos(true);
         try {
-          const data = await getListarCursos();
+          const res = await fetch("/api/cursos", { cache: "no-store" });
+          if (!res.ok) throw new Error("Erro ao buscar cursos");
+          const data: Curso[] = await res.json();
           setCursos(data);
         } catch (error) {
           console.error("Erro ao carregar cursos:", error);

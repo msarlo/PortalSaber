@@ -255,15 +255,20 @@ export default function CriarTutorialPage() {
       setDescription(cardData.description || '');
       setRole(cardData.role || '');
 
-      // 2. BUSCAR CONTEÚDO DETALHADO usando sua API dinâmica
+      // 2. BUSCAR CONTEÚDO DETALHADO 
       console.log('📖 Buscando conteúdo detalhado do tutorial...');
       
       try {
         const tutorialResponse = await fetch(`/api/cursos/${courseSlug}`);
         
+        console.log('🌐 Status da resposta:', tutorialResponse.status);
+        console.log('🌐 URL chamada:', `/api/cursos/${courseSlug}`);
+        
         if (tutorialResponse.ok) {
           const tutorialData = await tutorialResponse.json();
           console.log('📚 Conteúdo detalhado encontrado:', tutorialData);
+          console.log('📚 Tipo do conteúdo:', typeof tutorialData);
+          console.log('📚 Tem capitulos?', !!tutorialData.capitulos);
           
           // CONVERTER PARA BLOCOS DO EDITOR
           const blocosConvertidos = convertTutorialToBlocks(tutorialData);
@@ -272,11 +277,13 @@ export default function CriarTutorialPage() {
             console.log('✅ Blocos convertidos com sucesso:', blocosConvertidos);
             setConteudo(blocosConvertidos);
           } else {
-            console.log('⚠️ Iniciando com conteúdo vazio');
+            console.log('⚠️ Nenhum bloco convertido');
+            console.log('⚠️ Dados originais:', JSON.stringify(tutorialData, null, 2));
             setConteudo([]);
           }
         } else {
-          console.log('ℹ️ Arquivo de tutorial não encontrado, criando novo');
+          const errorText = await tutorialResponse.text();
+          console.log('❌ Erro na resposta:', tutorialResponse.status, errorText);
           setConteudo([]);
         }
       } catch (tutorialError) {
@@ -460,12 +467,10 @@ export default function CriarTutorialPage() {
             </div>
             <div>
               <label className="block font-medium">Imagem do Card</label>
-              <input
-                type="text"
+              {/* Substituir o input de texto pelo ImageUpload */}
+              <ImageUpload
                 value={image}
-                onChange={(e) => setImage(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
-                placeholder="/assets/images/exemplo.png"
+                onChange={(url) => setImage(url)}
               />
             </div>
           </div>

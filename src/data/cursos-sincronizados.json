@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "Sistema PRONTO",
+    "image": "/assets/images/LogoProntoSemBG.png",
+    "slug": "pronto",
+    "description": "Aprenda os fundamentos do sistema e suas principais funcionalidades.",
+    "role": "Saude"
+  },
+  {
+    "id": 2,
+    "title": "GLPI",
+    "image": "/assets/images/glpi_logo2.png",
+    "slug": "glpi",
+    "description": "Domine as ferramentas essenciais para gestão de chamados.",
+    "role": "SUS"
+  },
+  {
+    "id": 3,
+    "title": "1DOC",
+    "image": "/assets/images/umdoc.webp",
+    "slug": "umdoc",
+    "description": "Gerencie documentos e processos com este sistema completo.",
+    "role": "SUS"
+  },
+  {
+    "id": 4,
+    "title": "Teste",
+    "image": "/assets/images/teste.png",
+    "slug": "teste",
+    "description": "ESTAMOS PRONTOS...",
+    "role": "Saude"
+  }
+]

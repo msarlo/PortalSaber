@@ -1,0 +1,20 @@
+{
+  "id": "pronto",
+  "titulo": "Tutorial PRONTO",
+  "capitulos": [
+    {
+      "id": "capitulo-principal",
+      "titulo": "Conteúdo Principal",
+      "conteudo": [
+        {
+          "tipo": "capitulo",
+          "texto": "Introdução ao PRONTO"
+        },
+        {
+          "tipo": "paragrafo",
+          "texto": "Este tutorial está sendo criado. Adicione o conteúdo através do editor."
+        }
+      ]
+    }
+  ]
+}
