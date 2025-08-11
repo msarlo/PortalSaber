@@ -21,6 +21,7 @@ async function getCourseData(slug: string): Promise<CourseData> {
   return response.json();
 }
 
+
 export default async function CoursePage({ 
   params 
 }: { 
@@ -63,6 +64,7 @@ export default async function CoursePage({
   );
 }
 
+// Gera metadata dinâmica para SEO
 export async function generateMetadata({ 
   params 
 }: { 
