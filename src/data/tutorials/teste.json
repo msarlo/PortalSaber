@@ -8,39 +8,31 @@
       "conteudo": [
         {
           "tipo": "capitulo",
-          "texto": "ESTAMOS PRONTOS",
+          "texto": "Testando Real oficial ",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "subtitulo",
+          "texto": "aaaaaaaaaaaaaaaaaaaaa",
           "src": "",
           "alt": ""
         },
         {
           "tipo": "paragrafo",
-          "texto": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "texto": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           "src": "",
           "alt": ""
         },
         {
           "tipo": "imagem",
           "texto": "",
-          "src": "/uploads/images/1754904686718_isis.png",
-          "alt": "isis"
+          "src": "/uploads/images/1754929739471_LogoPronto.jpeg",
+          "alt": "LogoPronto"
         },
         {
           "tipo": "capitulo",
-          "texto": "Tentando escrever um titulo ",
-          "src": "",
-          "alt": ""
-        },
-        {
-          "tipo": "subtitulo",
-          "texto": "Uai os títulos não estão sendo renderizados ",
-          "src": "",
-          "alt": ""
-        },
-        {
-          "tipo": "paragrafo",
-          "texto": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          "src": "",
-          "alt": ""
+          "texto": "Segundo título para criar minha side bar corretamente"
         }
       ]
     }
