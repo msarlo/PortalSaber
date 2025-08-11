@@ -24,9 +24,9 @@ async function getCourseData(slug: string): Promise<CourseData> {
 export default async function CoursePage({ 
   params 
 }: { 
-  params: { slug: string } 
+  params: Promise<{ slug: string }> 
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   
   const courseData = await getCourseData(slug);
   
@@ -66,9 +66,10 @@ export default async function CoursePage({
 export async function generateMetadata({ 
   params 
 }: { 
-  params: { slug: string } 
+  params: Promise<{ slug: string }> 
 }) {
-  const courseData = await getCourseData(params.slug);
+  const { slug } = await params;
+  const courseData = await getCourseData(slug);
   
   return {
     title: `${courseData.titulo} - Portal do Saber`,
