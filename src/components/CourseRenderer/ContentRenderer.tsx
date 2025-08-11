@@ -2,12 +2,12 @@
 import React from "react";
 import Image from "next/image";
 import { ConteudoItem } from "./types";
+import { div, h1 } from "framer-motion/client";
 
 export const ContentRenderer = ({ item }: { item: ConteudoItem }) => {
   switch (item.tipo) {
-    case "paragrafo":
-      return <p className="text-gray-700 leading-relaxed mb-4">{item.texto}</p>;
-
+    case "capitulo":
+      return <p className="text-gray-700 leading-relaxed mb-4">{item.texto}</p>; 
     case "imagem":
       return (
         <div className="my-4">
@@ -41,7 +41,7 @@ export const ContentRenderer = ({ item }: { item: ConteudoItem }) => {
         </ul>
       );
 
-    case "subtopico":
+    case "subtitulo":
       return (
         <article
           id={item.titulo?.toLowerCase().replace(/\s+/g, "-")}
