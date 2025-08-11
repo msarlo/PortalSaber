@@ -3,12 +3,19 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
+// Helper para obter o slug do contexto (compatível com Next 15)
+async function getSlugFromContext(context: any): Promise<string> {
+  const maybeParams = context?.params;
+  const params = typeof maybeParams?.then === "function" ? await maybeParams : maybeParams;
+  return params?.slug as string;
+}
+
 export async function GET(
   request: Request,
-  context: { params: Promise<{ slug: string }> }
+  context: any
 ) {
   try {
-    const { slug } = await context.params;
+    const slug = await getSlugFromContext(context);
     console.log('🔍 API: Buscando tutorial para slug:', slug);
 
     const dataDirectory = path.join(process.cwd(), "src", "data", "tutorials");
@@ -74,10 +81,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  context: { params: Promise<{ slug: string }> }
+  context: any
 ) {
   try {
-    const { slug } = await context.params;
+    const slug = await getSlugFromContext(context);
     const body = await request.json();
     const { cardData, tutorialContent } = body || {};
 
@@ -139,10 +146,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  context: { params: Promise<{ slug: string }> }
+  context: any
 ) {
   try {
-    const { slug } = await context.params;
+    const slug = await getSlugFromContext(context);
 
     const dataDir = path.join(process.cwd(), "src", "data");
     const tutorialsDir = path.join(dataDir, "tutorials");

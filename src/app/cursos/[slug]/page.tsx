@@ -5,11 +5,11 @@ import InteractionButtons from "@/components/InteractionButtons";
 import { ContentRenderer } from "@/components/CourseRenderer/ContentRenderer";
 import { generateSidebarItems } from "@/components/CourseRenderer/SidebarGenerator";
 import { CourseData } from "@/components/CourseRenderer/types";
+import { getBaseUrl } from "@/lib/getBaseUrl";
 
 // Função para buscar dados do curso baseado no slug
 async function getCourseData(slug: string): Promise<CourseData> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-  
+  const baseUrl = getBaseUrl();
   const response = await fetch(`${baseUrl}/api/cursos/${slug}`, {
     cache: "no-store",
   });
@@ -24,9 +24,9 @@ async function getCourseData(slug: string): Promise<CourseData> {
 export default async function CoursePage({ 
   params 
 }: { 
-  params: { slug: string } 
+  params: Promise<{ slug: string }> 
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   
   const courseData = await getCourseData(slug);
   
@@ -66,9 +66,10 @@ export default async function CoursePage({
 export async function generateMetadata({ 
   params 
 }: { 
-  params: { slug: string } 
+  params: Promise<{ slug: string }> 
 }) {
-  const courseData = await getCourseData(params.slug);
+  const { slug } = await params;
+  const courseData = await getCourseData(slug);
   
   return {
     title: `${courseData.titulo} - Portal do Saber`,
