@@ -2,18 +2,11 @@ import { NextResponse } from "next/server";
 import path from "path";
 import { promises as fs } from "fs";
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(request: Request) {
   try {
-
-    const { slug } = await params;
-
-    
-    const dataDirectory = path.join(process.cwd(), "src", "data", "tutorials");
+    const dataDirectory = path.join(process.cwd(), "src", "data");
     const fileContents = await fs.readFile(
-      path.join(dataDirectory, `${slug}.json`),
+      path.join(dataDirectory, "glpiData.json"),
       "utf8"
     );
     const data = JSON.parse(fileContents);
