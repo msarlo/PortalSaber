@@ -1,35 +1,277 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Tipos para o nosso conteúdo dinâmico, espelhando seu JSON
+// Seus tipos existentes
 type ConteudoItem = {
   tipo: "capitulo" | "subtitulo" | "paragrafo" | "imagem";
-  texto?: string; // Para título, subtítulo, parágrafo
-  src?: string;   // Para imagem
-  alt?: string;   // Para imagem
+  texto?: string;
+  src?: string;
+  alt?: string;
 };
+
+// Função principal para converter JSON do tutorial em blocos do editor
+const convertTutorialToBlocks = (tutorialData: any): ConteudoItem[] => {
+  const blocos: ConteudoItem[] = [];
+  
+  console.log('🔄 Convertendo tutorial para blocos:', tutorialData);
+  
+  if (!tutorialData) {
+    console.log('❌ Nenhum dado de tutorial encontrado');
+    return blocos;
+  }
+
+  // Verificar se já está no formato de blocos (array de objetos com tipo)
+  if (Array.isArray(tutorialData)) {
+    console.log('📦 Dados já estão em formato de blocos');
+    tutorialData.forEach((item: any) => {
+      if (item.tipo && ['capitulo', 'subtitulo', 'paragrafo', 'imagem'].includes(item.tipo)) {
+        blocos.push({
+          tipo: item.tipo,
+          texto: item.texto || '',
+          src: item.src || '',
+          alt: item.alt || ''
+        });
+      }
+    });
+    return blocos;
+  }
+
+  // Verificar se tem estrutura de capítulos
+  if (tutorialData.capitulos && Array.isArray(tutorialData.capitulos)) {
+    console.log('📚 Processando capítulos...');
+    
+    tutorialData.capitulos.forEach((capitulo: any, capIndex: number) => {
+      console.log(`📖 Processando capítulo ${capIndex}:`, capitulo);
+      
+      if (capitulo.conteudo) {
+        // Se o conteúdo já é um array de blocos
+        if (Array.isArray(capitulo.conteudo)) {
+          console.log('📋 Conteúdo é array de blocos');
+          capitulo.conteudo.forEach((item: any) => {
+            if (item.tipo && ['capitulo', 'subtitulo', 'paragrafo', 'imagem'].includes(item.tipo)) {
+              blocos.push({
+                tipo: item.tipo,
+                texto: item.texto || '',
+                src: item.src || '',
+                alt: item.alt || ''
+              });
+            }
+          });
+        } 
+        // Se o conteúdo é uma string HTML
+        else if (typeof capitulo.conteudo === 'string') {
+          console.log('🏷️ Conteúdo é HTML string');
+          const htmlBlocks = parseHtmlToBlocks(capitulo.conteudo);
+          blocos.push(...htmlBlocks);
+        }
+        // Se o conteúdo é um objeto
+        else if (typeof capitulo.conteudo === 'object') {
+          console.log('🔧 Conteúdo é objeto, tentando processar...');
+          // Tentar extrair propriedades conhecidas
+          if (capitulo.conteudo.texto) {
+            blocos.push({
+              tipo: 'paragrafo',
+              texto: capitulo.conteudo.texto
+            });
+          }
+        }
+      }
+    });
+  }
+  
+  // Se não encontrou nada nos capítulos, tentar processar o próprio objeto
+  if (blocos.length === 0) {
+    console.log('🔍 Tentando processar objeto principal...');
+    
+    // Se tem propriedades diretas
+    if (tutorialData.titulo) {
+      blocos.push({
+        tipo: 'capitulo',
+        texto: tutorialData.titulo
+      });
+    }
+    
+    if (tutorialData.descricao || tutorialData.description) {
+      blocos.push({
+        tipo: 'paragrafo',
+        texto: tutorialData.descricao || tutorialData.description
+      });
+    }
+  }
+
+  console.log('✅ Blocos convertidos:', blocos);
+  return blocos;
+};
+
+// Função para converter HTML em blocos (caso o conteúdo seja salvo como HTML)
+const parseHtmlToBlocks = (htmlString: string): ConteudoItem[] => {
+  const blocos: ConteudoItem[] = [];
+  
+  try {
+    // Criar um elemento temporário para parsing (apenas no cliente)
+    if (typeof window !== 'undefined') {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlString;
+      
+      // Iterar pelos elementos filhos
+      Array.from(tempDiv.children).forEach((element) => {
+        const tagName = element.tagName.toLowerCase();
+        const textContent = element.textContent?.trim() || '';
+        
+        switch (tagName) {
+          case 'h1':
+            if (textContent) {
+              blocos.push({
+                tipo: 'capitulo',
+                texto: textContent
+              });
+            }
+            break;
+            
+          case 'h2':
+          case 'h3':
+            if (textContent) {
+              blocos.push({
+                tipo: 'subtitulo',
+                texto: textContent
+              });
+            }
+            break;
+            
+          case 'p':
+            if (textContent) {
+              blocos.push({
+                tipo: 'paragrafo',
+                texto: textContent
+              });
+            }
+            break;
+            
+          case 'img':
+            const img = element as HTMLImageElement;
+            blocos.push({
+              tipo: 'imagem',
+              src: img.src || '',
+              alt: img.alt || ''
+            });
+            break;
+            
+          case 'div':
+            // Se é uma div com imagem
+            const imgElements = element.querySelectorAll('img');
+            if (imgElements.length > 0) {
+              imgElements.forEach(img => {
+                blocos.push({
+                  tipo: 'imagem',
+                  src: img.src || '',
+                  alt: img.alt || ''
+                });
+              });
+            } else if (textContent) {
+              blocos.push({
+                tipo: 'paragrafo',
+                texto: textContent
+              });
+            }
+            break;
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Erro ao fazer parse do HTML:', error);
+  }
+  
+  return blocos;
+};
+
+// ========== FIM DAS FUNÇÕES A INSERIR ==========
 
 export default function CriarTutorialPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editSlug = searchParams.get('edit'); // Agora usa SLUG em vez de ID
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  // Estado para os metadados do card
+  // Verificar se é admin
+  const isAdmin = isAuthenticated && user?.role === 'ADMIN';
+
+  // Estados existentes
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
   const [role, setRole] = useState("");
-  // ... outros campos do card
-
-  // ESTADO PRINCIPAL: Um array para os blocos de conteúdo do tutorial
   const [conteudo, setConteudo] = useState<ConteudoItem[]>([]);
-  
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Função para adicionar um novo bloco de conteúdo
+  // Verificar autenticação
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      alert('Acesso negado. Apenas administradores podem acessar esta área.');
+      router.push('/');
+    }
+  }, [isAdmin, authLoading, router]);
+
+  // Carregar dados do curso para edição usando SLUG
+  useEffect(() => {
+    if (editSlug && isAdmin) {
+      loadCourseData(editSlug);
+    }
+  }, [editSlug, isAdmin]);
+
+  const loadCourseData = async (courseSlug: string) => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      // Buscar dados do curso por SLUG
+      const response = await fetch(`/api/cursos/${courseSlug}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Curso não encontrado');
+      
+      const courseData = await response.json();
+      
+      // Preencher os campos básicos
+      setTitle(courseData.title || '');
+      setSlug(courseData.slug || '');
+      setImage(courseData.image || '');
+      setDescription(courseData.description || '');
+      setRole(courseData.role || '');
+
+      // Buscar conteúdo do tutorial usando o slug
+      try {
+        const tutorialResponse = await fetch(`/api/tutorial/${courseData.slug}`);
+        if (tutorialResponse.ok) {
+          const tutorialData = await tutorialResponse.json();
+          
+          // Converter o conteúdo do tutorial para o formato do editor
+          if (tutorialData.capitulos && tutorialData.capitulos[0]?.conteudo) {
+            setConteudo(tutorialData.capitulos[0].conteudo);
+          }
+        }
+      } catch (tutorialError) {
+        console.log('Tutorial não encontrado, criando novo conteúdo');
+      }
+      
+    } catch (error) {
+      console.error('Erro ao carregar curso:', error);
+      setError('Erro ao carregar dados do curso');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Suas funções existentes para gerenciar blocos
   const adicionarBloco = (tipo: ConteudoItem['tipo']) => {
     const novoBloco: ConteudoItem = { tipo };
     if (tipo === 'imagem') {
@@ -41,14 +283,12 @@ export default function CriarTutorialPage() {
     setConteudo([...conteudo, novoBloco]);
   };
 
-  // Função para atualizar um bloco existente
   const atualizarBloco = (index: number, field: keyof ConteudoItem, value: string) => {
     const novosBlocos = [...conteudo];
     (novosBlocos[index] as any)[field] = value;
     setConteudo(novosBlocos);
   };
 
-  // Função para remover um bloco
   const removerBloco = (index: number) => {
     const novosBlocos = conteudo.filter((_, i) => i !== index);
     setConteudo(novosBlocos);
@@ -74,12 +314,17 @@ export default function CriarTutorialPage() {
       },
     };
 
-    console.log("Enviando para a API:", JSON.stringify(tutorialCompleto, null, 2));
-    
     try {
-      const response = await fetch('/api/cursos/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const token = localStorage.getItem('authToken');
+      const url = editSlug ? `/api/cursos/${editSlug}` : '/api/cursos/';
+      const method = editSlug ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(tutorialCompleto)
       });
 
@@ -96,11 +341,44 @@ export default function CriarTutorialPage() {
     }
   };
 
+  // Loading states
+  if (authLoading || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">
+            {isLoading ? 'Carregando dados do curso...' : 'Carregando...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
+
   return (
     <main className="container mx-auto px-4 py-24">
-      <h1 className="text-3xl font-bold mb-6">Criar Novo Tutorial</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          ← Voltar
+        </button>
+        <h1 className="text-3xl font-bold">
+          {editSlug ? 'Editar Tutorial' : 'Criar Novo Tutorial'}
+        </h1>
+      </div>
       
-      {/* Formulário para os metadados do Card */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-8">
         <fieldset className="border p-4 rounded-md">
           <legend className="text-xl font-semibold px-2">Informações do Card</legend>
@@ -111,7 +389,7 @@ export default function CriarTutorialPage() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
                 required
               />
             </div>
@@ -121,17 +399,23 @@ export default function CriarTutorialPage() {
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
                 placeholder="tutorial-exemplo"
                 required
+                disabled={!!editSlug} // Não permitir edição do slug em modo de edição
               />
+              {editSlug && (
+                <p className="text-sm text-gray-500 mt-1">
+                  O slug não pode ser alterado durante a edição para manter a consistência das URLs
+                </p>
+              )}
             </div>
             <div className="md:col-span-2">
               <label className="block font-medium">Descrição</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
                 rows={3}
                 required
               />
@@ -142,7 +426,7 @@ export default function CriarTutorialPage() {
                 type="text"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
                 placeholder="ex: Enfermeiro, Médico, etc."
               />
             </div>
@@ -152,49 +436,69 @@ export default function CriarTutorialPage() {
                 type="text"
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
                 placeholder="/assets/images/exemplo.png"
               />
             </div>
           </div>
         </fieldset>
 
-        {/* Editor de Conteúdo Dinâmico */}
+        {/* Editor de Conteúdo Dinâmico - mantém seu código existente */}
         <fieldset className="border p-4 rounded-md">
           <legend className="text-xl font-semibold px-2">Conteúdo do Tutorial</legend>
           
-          {/* Renderiza os blocos de conteúdo existentes */}
           <div className="space-y-6">
             {conteudo.map((bloco, index) => (
               <div key={index} className="p-4 border rounded-lg relative">
-                <button type="button" onClick={() => removerBloco(index)} className="absolute top-2 right-2 text-red-500 font-bold">X</button>
+                <button 
+                  type="button" 
+                  onClick={() => removerBloco(index)} 
+                  className="absolute top-2 right-2 text-red-500 font-bold hover:bg-red-100 w-8 h-8 rounded-full flex items-center justify-center"
+                >
+                  ×
+                </button>
                 
                 {bloco.tipo === 'capitulo' && (
                   <div>
                     <label className="block font-medium">Título</label>
-                    <input type="text" value={bloco.texto} onChange={(e) => atualizarBloco(index, 'texto', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-2xl font-bold" />
+                    <input 
+                      type="text" 
+                      value={bloco.texto || ''} 
+                      onChange={(e) => atualizarBloco(index, 'texto', e.target.value)} 
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-2xl font-bold border p-2" 
+                    />
                   </div>
                 )}
 
                 {bloco.tipo === 'subtitulo' && (
                   <div>
                     <label className="block font-medium">Subtítulo</label>
-                    <input type="text" value={bloco.texto} onChange={(e) => atualizarBloco(index, 'texto', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-xl font-semibold" />
+                    <input 
+                      type="text" 
+                      value={bloco.texto || ''} 
+                      onChange={(e) => atualizarBloco(index, 'texto', e.target.value)} 
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-xl font-semibold border p-2" 
+                    />
                   </div>
                 )}
 
                 {bloco.tipo === 'paragrafo' && (
                   <div>
                     <label className="block font-medium">Parágrafo</label>
-                    <textarea value={bloco.texto} onChange={(e) => atualizarBloco(index, 'texto', e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" rows={4} />
+                    <textarea 
+                      value={bloco.texto || ''} 
+                      onChange={(e) => atualizarBloco(index, 'texto', e.target.value)} 
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2" 
+                      rows={4} 
+                    />
                   </div>
                 )}
 
                 {bloco.tipo === 'imagem' && (
                   <ImageUpload
-                    value={bloco.src}
+                    value={bloco.src || ''}
                     onChange={(url) => atualizarBloco(index, 'src', url)}
-                    altValue={bloco.alt}
+                    altValue={bloco.alt || ''}
                     onAltChange={(alt) => atualizarBloco(index, 'alt', alt)}
                   />
                 )}
@@ -202,19 +506,35 @@ export default function CriarTutorialPage() {
             ))}
           </div>
 
-          {/* Controles para adicionar novos blocos */}
           <div className="mt-6 border-t pt-4">
             <span className="font-medium mr-4">Adicionar novo bloco:</span>
-            <button type="button" onClick={() => adicionarBloco('capitulo')} className="px-3 py-1 border rounded-md mr-2">Título</button>
-            <button type="button" onClick={() => adicionarBloco('subtitulo')} className="px-3 py-1 border rounded-md mr-2">Subtítulo</button>
-            <button type="button" onClick={() => adicionarBloco('paragrafo')} className="px-3 py-1 border rounded-md mr-2">Parágrafo</button>
-            <button type="button" onClick={() => adicionarBloco('imagem')} className="px-3 py-1 border rounded-md mr-2">Imagem</button>
+            <button type="button" onClick={() => adicionarBloco('capitulo')} className="px-3 py-1 border rounded-md mr-2 hover:bg-gray-50">Título</button>
+            <button type="button" onClick={() => adicionarBloco('subtitulo')} className="px-3 py-1 border rounded-md mr-2 hover:bg-gray-50">Subtítulo</button>
+            <button type="button" onClick={() => adicionarBloco('paragrafo')} className="px-3 py-1 border rounded-md mr-2 hover:bg-gray-50">Parágrafo</button>
+            <button type="button" onClick={() => adicionarBloco('imagem')} className="px-3 py-1 border rounded-md mr-2 hover:bg-gray-50">Imagem</button>
           </div>
         </fieldset>
 
-        <button type="submit" disabled={isSubmitting} className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 text-lg font-bold">
-          {isSubmitting ? "Salvando Tutorial..." : "Salvar Tutorial Completo"}
-        </button>
+        <div className="flex gap-4">
+          <button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 text-lg font-bold"
+          >
+            {isSubmitting ? 
+              (editSlug ? "Atualizando Tutorial..." : "Salvando Tutorial...") : 
+              (editSlug ? "Atualizar Tutorial" : "Salvar Tutorial Completo")
+            }
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-6 py-3 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 text-lg font-bold"
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </main>
   );
