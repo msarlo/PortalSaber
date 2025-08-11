@@ -55,14 +55,12 @@ export async function GET(request: Request) {
 
   // Filtrar por slug
   if (slug) {
-    const curso = await getCursoPorSlug(slug);
-    if (!curso) {
-      return NextResponse.json(
-        { error: "Curso não encontrado" },
-        { status: 404 }
-      );
+    const course = cursosMemoria.find((c) => c.slug === slug);
+    if (course) {
+      return NextResponse.json(course);
+    } else {
+      return NextResponse.json({ error: "Curso não encontrado" }, { status: 404 });
     }
-    return NextResponse.json(curso);
   }
 
   // Filtrar por role (Saude ou SUS)

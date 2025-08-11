@@ -227,45 +227,73 @@ export default function CriarTutorialPage() {
 
   const loadCourseData = async (courseSlug: string) => {
     setIsLoading(true);
+    setError(null);
+    
     try {
       const token = localStorage.getItem('authToken');
       
-      // Buscar dados do curso por SLUG
-      const response = await fetch(`/api/cursos/${courseSlug}`, {
+      console.log('🔍 Carregando dados do curso:', courseSlug);
+      
+      // 1. BUSCAR DADOS DO CARD usando sua API existente
+      const cardResponse = await fetch(`/api/cursos?slug=${courseSlug}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
-      if (!response.ok) throw new Error('Curso não encontrado');
+      if (!cardResponse.ok) {
+        throw new Error(`Curso não encontrado (${cardResponse.status})`);
+      }
       
-      const courseData = await response.json();
+      const cardData = await cardResponse.json();
+      console.log('📋 Dados do card carregados:', cardData);
       
-      // Preencher os campos básicos
-      setTitle(courseData.title || '');
-      setSlug(courseData.slug || '');
-      setImage(courseData.image || '');
-      setDescription(courseData.description || '');
-      setRole(courseData.role || '');
+      // Preencher os campos básicos do formulário
+      setTitle(cardData.title || '');
+      setSlug(cardData.slug || '');
+      setImage(cardData.image || '');
+      setDescription(cardData.description || '');
+      setRole(cardData.role || '');
 
-      // Buscar conteúdo do tutorial usando o slug
+      // 2. BUSCAR CONTEÚDO DETALHADO usando sua API dinâmica
+      console.log('📖 Buscando conteúdo detalhado do tutorial...');
+      
       try {
-        const tutorialResponse = await fetch(`/api/tutorial/${courseData.slug}`);
+        const tutorialResponse = await fetch(`/api/cursos/${courseSlug}`);
+        
         if (tutorialResponse.ok) {
           const tutorialData = await tutorialResponse.json();
+          console.log('📚 Conteúdo detalhado encontrado:', tutorialData);
           
-          // Converter o conteúdo do tutorial para o formato do editor
-          if (tutorialData.capitulos && tutorialData.capitulos[0]?.conteudo) {
-            setConteudo(tutorialData.capitulos[0].conteudo);
+          // CONVERTER PARA BLOCOS DO EDITOR
+          const blocosConvertidos = convertTutorialToBlocks(tutorialData);
+          
+          if (blocosConvertidos.length > 0) {
+            console.log('✅ Blocos convertidos com sucesso:', blocosConvertidos);
+            setConteudo(blocosConvertidos);
+          } else {
+            console.log('⚠️ Iniciando com conteúdo vazio');
+            setConteudo([]);
           }
+        } else {
+          console.log('ℹ️ Arquivo de tutorial não encontrado, criando novo');
+          setConteudo([]);
         }
       } catch (tutorialError) {
-        console.log('Tutorial não encontrado, criando novo conteúdo');
+        console.error('❌ Erro ao buscar conteúdo detalhado:', tutorialError);
+        setConteudo([]);
       }
       
     } catch (error) {
-      console.error('Erro ao carregar curso:', error);
-      setError('Erro ao carregar dados do curso');
+      console.error('❌ Erro ao carregar curso:', error);
+      setError(
+        `Erro ao carregar dados do curso: ${
+          typeof error === 'object' && error !== null && 'message' in error
+            ? (error as { message?: string }).message
+            : String(error)
+        }`
+      );
+      setConteudo([]);
     } finally {
       setIsLoading(false);
     }
