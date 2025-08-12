@@ -1,0 +1,71 @@
+{
+  "id": "sistema-pronto",
+  "titulo": "Sistema Pronto",
+  "capitulos": [
+    {
+      "id": "capitulo-principal",
+      "titulo": "Conteúdo Principal",
+      "conteudo": [
+        {
+          "tipo": "capitulo",
+          "texto": "Cadastrar Usuário",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "paragrafo",
+          "texto": "Primeiramente clique em Usuário da aba ambulatório e em seguida, no ícone de adição de cadastro ",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "imagem",
+          "texto": "",
+          "src": "/uploads/images/1754939395983_ambulat_rio_add.png",
+          "alt": "ambulatório add"
+        },
+        {
+          "tipo": "paragrafo",
+          "texto": "Em seguida, preencha a maior quantidade de informações que puder! Apenas aquelas com asterisco (*) são obrigatórias, contudo, mais informações nos ajudam a enxergar melhor a realidade da população e a melhorar as informações em outras plataformas ",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "imagem",
+          "texto": "",
+          "src": "/uploads/images/1754940150055_ambulatorio_user2.png",
+          "alt": "ambulatorio user2"
+        },
+        {
+          "tipo": "capitulo",
+          "texto": "PESQUISAR USUÁRIO",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "paragrafo",
+          "texto": "Primeiramente clique em Usuário da aba ambulatório e em seguida terá duas opções que são mais práticas para a pesquisa. Nome do usuário ou CPF",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "imagem",
+          "texto": "",
+          "src": "/uploads/images/1754941712560_pesquisar_user1.png",
+          "alt": "pesquisar user1"
+        },
+        {
+          "tipo": "paragrafo",
+          "texto": "Importante não utilizar abreviações ao buscar pelo nome do usuário. Uma vez digitado o dados de identificação do usuário, clique no ícone de pesquisar no canto superior esquerdo da sua tela: ",
+          "src": "",
+          "alt": ""
+        },
+        {
+          "tipo": "imagem",
+          "src": "/uploads/images/1754941924164_pesquisar_user2.png",
+          "alt": "pesquisar user2"
+        }
+      ]
+    }
+  ]
+}
