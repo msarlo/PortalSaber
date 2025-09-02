@@ -19,7 +19,10 @@ const convertTutorialToBlocks = (tutorialData: any): ConteudoItem[] => {
 
   if (Array.isArray(tutorialData)) {
     tutorialData.forEach((item: any) => {
-      if (item?.tipo && ["capitulo", "subtitulo", "paragrafo", "imagem"].includes(item.tipo)) {
+      if (
+        item?.tipo &&
+        ["capitulo", "subtitulo", "paragrafo", "imagem"].includes(item.tipo)
+      ) {
         blocos.push({
           tipo: item.tipo,
           texto: item.texto || "",
@@ -36,7 +39,12 @@ const convertTutorialToBlocks = (tutorialData: any): ConteudoItem[] => {
       if (capitulo?.conteudo) {
         if (Array.isArray(capitulo.conteudo)) {
           capitulo.conteudo.forEach((item: any) => {
-            if (item?.tipo && ["capitulo", "subtitulo", "paragrafo", "imagem"].includes(item.tipo)) {
+            if (
+              item?.tipo &&
+              ["capitulo", "subtitulo", "paragrafo", "imagem"].includes(
+                item.tipo
+              )
+            ) {
               blocos.push({
                 tipo: item.tipo,
                 texto: item.texto || "",
@@ -48,7 +56,10 @@ const convertTutorialToBlocks = (tutorialData: any): ConteudoItem[] => {
         } else if (typeof capitulo.conteudo === "string") {
           const htmlBlocks = parseHtmlToBlocks(capitulo.conteudo);
           blocos.push(...htmlBlocks);
-        } else if (typeof capitulo.conteudo === "object" && capitulo.conteudo.texto) {
+        } else if (
+          typeof capitulo.conteudo === "object" &&
+          capitulo.conteudo.texto
+        ) {
           blocos.push({ tipo: "paragrafo", texto: capitulo.conteudo.texto });
         }
       }
@@ -60,7 +71,10 @@ const convertTutorialToBlocks = (tutorialData: any): ConteudoItem[] => {
       blocos.push({ tipo: "capitulo", texto: tutorialData.titulo });
     }
     if (tutorialData.descricao || tutorialData.description) {
-      blocos.push({ tipo: "paragrafo", texto: tutorialData.descricao || tutorialData.description });
+      blocos.push({
+        tipo: "paragrafo",
+        texto: tutorialData.descricao || tutorialData.description,
+      });
     }
   }
 
@@ -81,25 +95,36 @@ const parseHtmlToBlocks = (htmlString: string): ConteudoItem[] => {
 
         switch (tagName) {
           case "h1":
-            if (textContent) blocos.push({ tipo: "capitulo", texto: textContent });
+            if (textContent)
+              blocos.push({ tipo: "capitulo", texto: textContent });
             break;
           case "h2":
           case "h3":
-            if (textContent) blocos.push({ tipo: "subtitulo", texto: textContent });
+            if (textContent)
+              blocos.push({ tipo: "subtitulo", texto: textContent });
             break;
           case "p":
-            if (textContent) blocos.push({ tipo: "paragrafo", texto: textContent });
+            if (textContent)
+              blocos.push({ tipo: "paragrafo", texto: textContent });
             break;
           case "img": {
             const img = element as HTMLImageElement;
-            blocos.push({ tipo: "imagem", src: img.src || "", alt: img.alt || "" });
+            blocos.push({
+              tipo: "imagem",
+              src: img.src || "",
+              alt: img.alt || "",
+            });
             break;
           }
           case "div": {
             const imgElements = element.querySelectorAll("img");
             if (imgElements.length > 0) {
               imgElements.forEach((img) => {
-                blocos.push({ tipo: "imagem", src: img.src || "", alt: img.alt || "" });
+                blocos.push({
+                  tipo: "imagem",
+                  src: img.src || "",
+                  alt: img.alt || "",
+                });
               });
             } else if (textContent) {
               blocos.push({ tipo: "paragrafo", texto: textContent });
@@ -133,6 +158,7 @@ function AddTutorialInner() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAdmin) {
@@ -150,13 +176,17 @@ function AddTutorialInner() {
     setIsLoading(true);
     setError(null);
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("authToken")
+          : null;
 
       // 1) Card
       const cardResponse = await fetch(`/api/cursos?slug=${courseSlug}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-      if (!cardResponse.ok) throw new Error(`Curso não encontrado (${cardResponse.status})`);
+      if (!cardResponse.ok)
+        throw new Error(`Curso não encontrado (${cardResponse.status})`);
       const cardData = await cardResponse.json();
 
       setTitle(cardData.title || "");
@@ -193,7 +223,11 @@ function AddTutorialInner() {
     setConteudo((prev) => [...prev, novoBloco]);
   };
 
-  const atualizarBloco = (index: number, field: keyof ConteudoItem, value: string) => {
+  const atualizarBloco = (
+    index: number,
+    field: keyof ConteudoItem,
+    value: string
+  ) => {
     setConteudo((prev) => {
       const novos = [...prev];
       (novos[index] as any)[field] = value;
@@ -203,6 +237,57 @@ function AddTutorialInner() {
 
   const removerBloco = (index: number) => {
     setConteudo((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const moverBloco = (index: number, direcao: "cima" | "baixo") => {
+    setConteudo((prev) => {
+      const novos = [...prev];
+      if (direcao === "cima" && index > 0) {
+        [novos[index - 1], novos[index]] = [novos[index], novos[index - 1]];
+      }
+      if (direcao === "baixo" && index < novos.length - 1) {
+        [novos[index], novos[index + 1]] = [novos[index + 1], novos[index]];
+      }
+      return novos;
+    });
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    setConteudo((prev) => {
+      const novos = [...prev];
+      const draggedItem = novos[draggedIndex];
+
+      // Remove o item da posição original
+      novos.splice(draggedIndex, 1);
+
+      // Insere na nova posição
+      novos.splice(dropIndex, 0, draggedItem);
+
+      return novos;
+    });
+
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -226,7 +311,10 @@ function AddTutorialInner() {
     };
 
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("authToken")
+          : null;
       const url = editSlug ? `/api/cursos/${editSlug}` : "/api/cursos/";
       const method = editSlug ? "PUT" : "POST";
 
@@ -282,16 +370,22 @@ function AddTutorialInner() {
         >
           ← Voltar
         </button>
-        <h1 className="text-3xl font-bold">{editSlug ? "Editar Tutorial" : "Criar Novo Tutorial"}</h1>
+        <h1 className="text-3xl font-bold">
+          {editSlug ? "Editar Tutorial" : "Criar Novo Tutorial"}
+        </h1>
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div>
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <fieldset className="border p-4 rounded-md">
-          <legend className="text-xl font-semibold px-2">Informações do Card</legend>
+          <legend className="text-xl font-semibold px-2">
+            Informações do Card
+          </legend>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-medium">Título</label>
@@ -316,7 +410,8 @@ function AddTutorialInner() {
               />
               {editSlug && (
                 <p className="text-sm text-gray-500 mt-1">
-                  O slug não pode ser alterado durante a edição para manter a consistência das URLs
+                  O slug não pode ser alterado durante a edição para manter a
+                  consistência das URLs
                 </p>
               )}
             </div>
@@ -348,63 +443,93 @@ function AddTutorialInner() {
         </fieldset>
 
         <fieldset className="border p-4 rounded-md">
-          <legend className="text-xl font-semibold px-2">Conteúdo do Tutorial</legend>
+          <legend className="text-xl font-semibold px-2">
+            Conteúdo do Tutorial
+          </legend>
 
           <div className="space-y-6">
             {conteudo.map((bloco, index) => (
-              <div key={index} className="p-4 border rounded-lg relative">
+              <div
+                key={index}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                className={`p-4 border rounded-lg relative cursor-move transition-all ${
+                  draggedIndex === index
+                    ? "opacity-50 transform scale-105 shadow-lg border-blue-400"
+                    : "hover:shadow-md"
+                }`}
+              >
+                {/* Indicador visual de que é arrastável */}
+                <div className="absolute top-2 left-2 text-gray-400 text-xs flex items-center gap-1">
+                  <span>⋮⋮</span>
+                  <span className="text-xs">Arrastar</span>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => removerBloco(index)}
-                  className="absolute top-2 right-2 text-red-500 font-bold hover:bg-red-100 w-8 h-8 rounded-full flex items-center justify-center"
+                  className="absolute top-2 right-2 text-red-500 font-bold hover:bg-red-100 w-8 h-8 rounded-full flex items-center justify-center z-10"
+                  title="Remover bloco"
                 >
                   ×
                 </button>
 
-                {bloco.tipo === "capitulo" && (
-                  <div>
-                    <label className="block font-medium">Título</label>
-                    <input
-                      type="text"
-                      value={bloco.texto || ""}
-                      onChange={(e) => atualizarBloco(index, "texto", e.target.value)}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-2xl font-bold border p-2"
-                    />
-                  </div>
-                )}
+                {/* Conteúdo do bloco com margem para não sobrepor os controles */}
+                <div className="mt-8">
+                  {bloco.tipo === "capitulo" && (
+                    <div>
+                      <label className="block font-medium">Título</label>
+                      <input
+                        type="text"
+                        value={bloco.texto || ""}
+                        onChange={(e) =>
+                          atualizarBloco(index, "texto", e.target.value)
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-2xl font-bold border p-2"
+                      />
+                    </div>
+                  )}
 
-                {bloco.tipo === "subtitulo" && (
-                  <div>
-                    <label className="block font-medium">Subtítulo</label>
-                    <input
-                      type="text"
-                      value={bloco.texto || ""}
-                      onChange={(e) => atualizarBloco(index, "texto", e.target.value)}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-xl font-semibold border p-2"
-                    />
-                  </div>
-                )}
+                  {bloco.tipo === "subtitulo" && (
+                    <div>
+                      <label className="block font-medium">Subtítulo</label>
+                      <input
+                        type="text"
+                        value={bloco.texto || ""}
+                        onChange={(e) =>
+                          atualizarBloco(index, "texto", e.target.value)
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-xl font-semibold border p-2"
+                      />
+                    </div>
+                  )}
 
-                {bloco.tipo === "paragrafo" && (
-                  <div>
-                    <label className="block font-medium">Parágrafo</label>
-                    <textarea
-                      value={bloco.texto || ""}
-                      onChange={(e) => atualizarBloco(index, "texto", e.target.value)}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
-                      rows={4}
-                    />
-                  </div>
-                )}
+                  {bloco.tipo === "paragrafo" && (
+                    <div>
+                      <label className="block font-medium">Parágrafo</label>
+                      <textarea
+                        value={bloco.texto || ""}
+                        onChange={(e) =>
+                          atualizarBloco(index, "texto", e.target.value)
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"
+                        rows={4}
+                      />
+                    </div>
+                  )}
 
-                {bloco.tipo === "imagem" && (
-                  <ImageUpload
-                    value={bloco.src || ""}
-                    onChange={(url) => atualizarBloco(index, "src", url)}
-                    altValue={bloco.alt || ""}
-                    onAltChange={(alt) => atualizarBloco(index, "alt", alt)}
-                  />
-                )}
+                  {bloco.tipo === "imagem" && (
+                    <ImageUpload
+                      value={bloco.src || ""}
+                      onChange={(url) => atualizarBloco(index, "src", url)}
+                      altValue={bloco.alt || ""}
+                      onAltChange={(alt) => atualizarBloco(index, "alt", alt)}
+                    />
+                  )}
+                </div>
               </div>
             ))}
           </div>
