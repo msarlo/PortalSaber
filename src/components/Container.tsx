@@ -27,8 +27,15 @@ export const Container = ({ img, buttonText, href, courseId }: Props) => {
         }
     };
 
+    const handleCardClick = () => {
+        router.push(href);
+    };
+    
     return (
-        <div className="relative bg-gradient-to-br from-blue-400 w-64 h-64 rounded-lg shadow-md p-4 flex flex-col items-center justify-center gap-4 group">
+        <div 
+            onClick={handleCardClick}
+            className="relative bg-gradient-to-br from-blue-400 w-64 h-64 rounded-lg shadow-md p-4 flex flex-col items-center justify-center gap-4 group cursor-pointer hover:scale-[1.02] transition-transform duration-200"
+        >
             {/* Botão de edição para admin */}
             {isAdmin && courseId && (
                 <button

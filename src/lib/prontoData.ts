@@ -162,6 +162,16 @@ export const tutoriaisProntoAcs: Tutorial[] = [
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
   },
 ];
+
+export const tutoriaisProntoEnfermeiro: Tutorial[] = [
+  {
+    id: "13",
+    titulo: "Cadastrar Usuário",
+    slug: "cadastrarUsuario",
+    profissaoSlug: "recepcionista",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+  },
+];
 // Funções helper para buscar dados (simulação)
 export const getProfissaoBySlug = async (
   slug: string
