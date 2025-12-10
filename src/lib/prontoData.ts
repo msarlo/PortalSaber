@@ -12,6 +12,7 @@ export interface Tutorial {
   slug: string; // Usado na URL, ex: "pesquisar-usuario"
   profissaoSlug: string; // Para linkar com a profissão
   imagemSrc: string;
+  url?: string;
 }
 
 export const profissoesPronto: Profissao[] = [
