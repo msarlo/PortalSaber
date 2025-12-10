@@ -16,12 +16,14 @@ export interface Tutorial {
 
 export const profissoesPronto: Profissao[] = [
   {
+    //check
     id: "rec",
     nome: "Recepcionista",
     slug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
   },
   {
+    //check
     id: "med",
     nome: "Médico",
     slug: "medico",

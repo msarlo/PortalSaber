@@ -3,13 +3,14 @@ import React from "react";
 import { Banner } from "@/components/Banner";
 import { Container } from "@/components/Container";
 import { profissoesPronto, Profissao } from "@/lib/prontoData";
-import logoProntoBanner from "/public/assets/images/LogoProntoSemBG.png"; // Importe a imagem
+const logoProntoBanner = "/assets/images/LogoProntoSemBG.png";
 
 export default function CursosProntoPage() {
   return (
     <main className="min-h-screen bg-gray-100">
       <Banner
         title={logoProntoBanner}
+        type="image"
         descricao="Nossa plataforma foi criada para ajudar profissionais a navegar por processos e ações de forma simples e eficiente. Explore a partir do seu cargo e encontre o que você precisa!"
       />
 

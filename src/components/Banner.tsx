@@ -2,18 +2,21 @@ import Image, { StaticImageData } from "next/image"
 
 interface BannerProps {
     title: string | StaticImageData;
-    descricao?: string
+    descricao?: string;
+    type?: 'text' | 'image';
 }
 
-export function Banner({ title, descricao }: BannerProps) {
+export function Banner({ title, descricao, type }: BannerProps) {
+    const isImage = type === 'image' || typeof title !== 'string';
+
     return (
         <section className="bg-custom-blue py-16 
          shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] mx-auto my-8 transform hover:scale-[1.01]
         transition-all duration-300">
             <div className="container mx-auto px-4">
-                {typeof title === 'string' ? (
+                {!isImage ? (
                     <div className="text-center">
-                        <h1 className="text-5xl font-bold mb-4 text-gray-200">{title}</h1>
+                        <h1 className="text-5xl font-bold mb-4 text-gray-200">{title as string}</h1>
                         {descricao && <p className="text-xl max-w-3xl mx-auto text-gray-200">{descricao}</p>}
                     </div>
                 ) : (

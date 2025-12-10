@@ -1,6 +1,6 @@
 // src/app/adm/sync/page.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SyncPage() {
   const [loading, setLoading] = useState(false);
@@ -53,9 +53,9 @@ export default function SyncPage() {
   };
 
   // Auto-carregar status ao entrar na página
-  useState(() => {
+  useEffect(() => {
     verificarStatus();
-  });
+  }, []);
 
   return (
     <div className="container mx-auto p-8 max-w-4xl">

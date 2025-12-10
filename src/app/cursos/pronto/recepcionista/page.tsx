@@ -1,13 +1,14 @@
 import { Banner } from "@/components/Banner";
 import { Container } from '@/components/Container';
 import { tutoriaisProntoRecepicionista,Tutorial } from '@/lib/prontoData';
-import logoProntoBanner from '/public/assets/images/LogoProntoSemBG.png';
+const logoProntoBanner = "/assets/images/LogoProntoSemBG.png";
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-gray-100">
       <Banner
       title={logoProntoBanner}
+      type="image"
         descricao="Tutoriais do Pronto para Recepcionistas"/>
 
        {/* Barra de Pequisa COMPONENTIZAR DEPOIS*/}
