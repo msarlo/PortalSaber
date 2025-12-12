@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 
 const logoProntoBanner = "/assets/images/LogoProntoSemBG.png";
 
-export default function MedicoPage() {
+export default function VigilanciaSanitariaPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const pathname = usePathname();
   const folderName = pathname?.split('/').pop() || "";
@@ -20,7 +20,7 @@ export default function MedicoPage() {
       <Banner
         title={logoProntoBanner}
         type="image"
-        descricao="Tutoriais do Pronto para Assistente Social"
+        descricao="Tutoriais do Pronto para Vigilância Sanitária"
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">

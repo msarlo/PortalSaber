@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 
 const logoProntoBanner = "/assets/images/LogoProntoSemBG.png";
 
-export default function MedicoPage() {
+export default function AssistenteSocialPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const pathname = usePathname();
   const folderName = pathname?.split('/').pop() || "";
