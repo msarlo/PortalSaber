@@ -10,14 +10,14 @@ const logoProntoBanner = "/assets/images/LogoProntoSemBG.png";
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTutorials = filterTutoriais('enfermeiro', searchTerm);
+  const filteredTutorials = filterTutoriais('medico', searchTerm);
 
   return (
     <main className="min-h-screen bg-gray-100">
       <Banner
         title={logoProntoBanner}
         type="image"
-        descricao="Tutoriais do Pronto para Recepcionistas"
+        descricao="Tutoriais do Pronto para Médicos"
       />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">

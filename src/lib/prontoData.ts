@@ -74,7 +74,7 @@ export const profissoesPronto: Profissao[] = [
   },
 ];
 
-export const tutoriaisProntoRecepicionista: Tutorial[] = [
+export const tutoriaisPronto: Tutorial[] = [
   {
     id: "1",
     titulo: "Cadastrar Usuário",
@@ -131,9 +131,6 @@ export const tutoriaisProntoRecepicionista: Tutorial[] = [
     profissaoSlug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
   },
-];
-
-export const tutoriaisProntoAcs: Tutorial[] = [
   {
     id: "9",
     titulo: "Cadastrar SUS",
@@ -162,17 +159,41 @@ export const tutoriaisProntoAcs: Tutorial[] = [
     profissaoSlug: "agenteComunitarioSaude",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
   },
-];
-
-export const tutoriaisProntoEnfermeiro: Tutorial[] = [
   {
     id: "13",
-    titulo: "Cadastrar Usuário",
-    slug: "cadastrarUsuario",
-    profissaoSlug: "recepcionista",
+    titulo: "Triagem de Paciente",
+    slug: "triagemPaciente",
+    profissaoSlug: "enfermeiro",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+  },
+  {
+    id: "14",
+    titulo: "Atendimento Médico",
+    slug: "triagemPaciente",
+    profissaoSlug: "medico",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+  },
+  {
+    id: "15",
+    titulo: "Marcar Consulta",
+    slug: "marcarConsulta",
+    profissaoSlug: "medico",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+  },
+  {
+    id: "16",
+    titulo: "Receitar Medicamento",
+    slug: "receitarMedicamento",
+    profissaoSlug: "medico",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
   },
 ];
+
+
+
+
+
+
 // Funções helper para buscar dados (simulação)
 export const getProfissaoBySlug = async (
   slug: string
@@ -183,7 +204,7 @@ export const getProfissaoBySlug = async (
 export const getTutoriaisByProfissaoSlug = async (
   profissaoSlug: string
 ): Promise<Tutorial[]> => {
-  return tutoriaisProntoRecepicionista.filter(
+  return tutoriaisPronto.filter(
     (t) => t.profissaoSlug === profissaoSlug
   );
 };
@@ -192,7 +213,17 @@ export const getTutorialBySlugs = async (
   profissaoSlug: string,
   tutorialSlug: string
 ): Promise<Tutorial | undefined> => {
-  return tutoriaisProntoRecepicionista.find(
+  return tutoriaisPronto.find(
     (t) => t.profissaoSlug === profissaoSlug && t.slug === tutorialSlug
+  );
+};
+
+export const filterTutoriais = (
+  profissaoSlug: string,
+  searchTerm: string
+): Tutorial[] => {
+  return tutoriaisPronto.filter((tutorial) =>
+    tutorial.profissaoSlug === profissaoSlug &&
+    tutorial.titulo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 };

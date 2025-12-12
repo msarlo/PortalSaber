@@ -3,16 +3,14 @@ import { useState } from 'react';
 import { Banner } from "@/components/Banner";
 import { SearchBar } from '@/components/SearchBar';
 import { CursoMapRender } from '@/components/CursoMapRender';
-import { tutoriaisProntoRecepicionista } from '@/lib/prontoData';
+import { filterTutoriais } from '@/lib/prontoData';
 
 const logoProntoBanner = "/assets/images/LogoProntoSemBG.png";
 
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTutorials = tutoriaisProntoRecepicionista.filter((tutorial) =>
-    tutorial.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTutorials = filterTutoriais('recepcionista', searchTerm);
 
   return (
     <main className="min-h-screen bg-gray-100">
