@@ -81,13 +81,15 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "cadastrarUsuario",
     profissaoSlug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/file/d/1Zj00F8AOdcyY8HFiBMhWoec78dzshFFG/view?usp=sharing",
   },
   {
     id: "2",
-    titulo: "Pesquisar Usuário",
+    titulo: "Pesquisar / Alterar Usuário",
     slug: "pesquisarUsuario",
     profissaoSlug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/file/d/1nuLya4U2bDDbzq31qIuPUUgNuLrvjozI/view?usp=drive_link",
   },
   {
     id: "3",
@@ -95,13 +97,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "importarUsuario",
     profissaoSlug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
-  },
-  {
-    id: "4",
-    titulo: "Atualizar Dados do Usuário",
-    slug: "atualizarDados",
-    profissaoSlug: "recepcionista",
-    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "5",
@@ -109,6 +105,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "filaDeAtendimento",
     profissaoSlug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/drive/folders/1NxHhw_KI97ETWd9cTQ8ayIqJrKkIDSqG?usp=sharing",
   },
   {
     id: "6",
@@ -116,20 +113,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "agendamento",
     profissaoSlug: "recepcionista",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
-  },
-  {
-    id: "7",
-    titulo: "Marcar Consulta",
-    slug: "marcarConsulta",
-    profissaoSlug: "recepcionista",
-    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
-  },
-  {
-    id: "8",
-    titulo: "Recepção de Serviço",
-    slug: "recepcaoDeServico",
-    profissaoSlug: "recepcionista",
-    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "9",
@@ -137,6 +121,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "cadastrarCidadao",
     profissaoSlug: "agenteComunitarioSaude",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "10",
@@ -144,6 +129,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "cadastrarDomicilio",
     profissaoSlug: "agenteComunitarioSaude",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "11",
@@ -151,6 +137,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "adicionarMembro",
     profissaoSlug: "agenteComunitarioSaude",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "12",
@@ -158,6 +145,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "enviarDados",
     profissaoSlug: "agenteComunitarioSaude",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "13",
@@ -165,6 +153,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "triagemPaciente",
     profissaoSlug: "enfermeiro",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "14",
@@ -172,6 +161,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "triagemPaciente",
     profissaoSlug: "medico",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "15",
@@ -179,6 +169,7 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "marcarConsulta",
     profissaoSlug: "medico",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
   },
   {
     id: "16",
@@ -186,8 +177,42 @@ export const tutoriaisPronto: Tutorial[] = [
     slug: "receitarMedicamento",
     profissaoSlug: "medico",
     imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: undefined,
+  },
+  {
+    id: "17",
+    titulo: "Solicitar Procedimento / Serviço",
+    slug: "solicitarProcedimentoServico",
+    profissaoSlug: "medico",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/file/d/1gpaWNXDUF9o7GHE7sHmJQFsH-YqaYpR_/view?usp=drive_link",
+  },
+  {
+    id: "18",
+    titulo: "Cancelar Agendamento",
+    slug: "cancelarAgendamento",
+    profissaoSlug: "medico",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/file/d/1ASwxURbNx9JkVYq3EZmTP5Yhtylt4UT6/view?usp=drive_link",
+  },
+  {
+    id: "19",
+    titulo: "Classificação da Fila de Espera",
+    slug: "classificacaoFilaEspera",
+    profissaoSlug: "medico",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/file/d/1XWjN87eNzK1w061mFDMHE8bGAFkLiYpn/view?usp=drive_link",
+  },
+  {
+    id: "20",
+    titulo: "Acompanhamento de Solicitações",
+    slug: "acompanhamentoSolicitacoes",
+    profissaoSlug: "medico",
+    imagemSrc: "/assets/icons/pronto/Recepicionista.webp",
+    url: "https://drive.google.com/file/d/1eFxUeMgi7aLqwmIbn5ID55Obx_57MM1h/view?usp=drive_link",
   },
 ];
+
 
 
 
