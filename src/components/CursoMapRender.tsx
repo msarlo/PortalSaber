@@ -14,7 +14,7 @@ export const CursoMapRender = ({ tutoriais }: Props) => {
                     key={tutorial.id}
                     img={tutorial.imagemSrc}
                     buttonText={tutorial.titulo}
-                    href={`/cursos/pronto/${tutorial.profissaoSlug}/${tutorial.slug}`}
+                    href={tutorial.url || `/cursos/pronto/${tutorial.profissaoSlug}/${tutorial.slug}`}
                 />
             ))}
         </div>
